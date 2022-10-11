@@ -17,12 +17,12 @@ export default function Login({navigation}) {
     }
   return (
     <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView style={{width: width, alignItems: 'center'}}>
+        <KeyboardAvoidingView style={{width: width, alignItems: 'center', flex: 1}}>
             <View style={styles.imgContainer}>
                 <Image source={logo} resizeMode='contain' style={{width: '50%'}} />
             </View>
-            <TextField icon='md-mail' placeholder='Email' />
-            <TextField icon='md-lock-closed' placeholder='Password' />
+            <TextField icon='md-mail' returnKeyType='next' placeholder='Email' />
+            <TextField icon='md-lock-closed' returnKeyType='done' placeholder='Password' />
             <View style={{marginTop: '15%'}} />
             <CustomeBtn name='Sign in' onPress={login} />
             <View style={{marginTop: '6%'}} />

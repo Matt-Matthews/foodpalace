@@ -4,7 +4,7 @@ import styles from "../pages/styles";
 import logo from '../assets/logo3.png';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function SecHeader({cartValue,toCart,prevPage}) {
+export default function SecHeader({cartValue,toCart,prevPage,setIsPopUp}) {
   
   return (
     <View style={styles.header}>
@@ -25,7 +25,8 @@ export default function SecHeader({cartValue,toCart,prevPage}) {
                 </View>
             }
             </View>
-            <Ionicons name="md-ellipsis-vertical" size={32} color="black" />
+            <Pressable onPress={()=>setIsPopUp(prev=>!prev)}><Ionicons name="md-ellipsis-vertical" size={32} color="black" /></Pressable>
+            
         </View>
     </View>
   );

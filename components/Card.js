@@ -5,10 +5,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import img from '../assets/food/delicious-fried-chicken-plate.jpg';
 import SecondaryBtn from "./SecondaryBtn";
 
-export default function Card() {
+export default function Card({about}) {
     const {height, width} = useWindowDimensions();
   return (
-    <View style={{...styles.card, height: height * 0.2}}>
+    <Pressable onPress={about} style={{...styles.card, height: height * 0.2}}>
       
       <Ionicons name={"md-heart"} style={styles.icon} size={20} color="black" />
     
@@ -19,12 +19,12 @@ export default function Card() {
         <View style={{height: height *0.02}} />
         <Text style={{fontSize: 12}}>Delicious fried chicken</Text>
         <View style={{height: height *0.01}} />
-        <Text style={{fontSize: 16}}>R 50.00</Text>
+        <Text style={{fontSize: 16}}>R 50.00</Text> 
         </View>
       </View>
-     <Pressable style={{...styles.btnPos}}>
-     <Text style={styles.secBtnBtnText}>Remove</Text>
+     <Pressable onPress={()=>alert('removed')} style={{...styles.btnPos}}>
+        <Text style={styles.secBtnBtnText}>Remove</Text>
      </Pressable>
-    </View>
+    </Pressable>
   );
 }

@@ -15,6 +15,7 @@ import image2 from '../assets/food/Pancake_Raspberry_Strawberry_White_background
 import image3 from '../assets/food/wallpaperflare.com_wallpaper1.jpg';
 import image4 from '../assets/food/wallpaperflare.com_wallpaper.jpg';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Logout from "../components/Logout";
 
 export default function Home({navigation}) {
     const {height,width} = useWindowDimensions();
@@ -23,11 +24,15 @@ export default function Home({navigation}) {
     const [scrollCounter,setScrollCounter] = useState(1);
     const [isDone,setIsDone] = useState(false);
     const [cartValue,setCartValue] = useState(1);
+    const [isPopUp, setIsPopUp] = useState(false);
 
     const scrollRef = useRef();
     function moreInfo(){
         navigation.navigate('About');
     }
+    
+
+    
 
     const [items, setItems] = React.useState([
         {img: image1, title: 'Fried chicken', describtion: 'Delicious fried chicken', price: 'R 50.00',liked: false, id: 0},
@@ -39,6 +44,16 @@ export default function Home({navigation}) {
         {img: image3, title: 'Nuggets', describtion: 'With french fries', price: 'R 65.00',liked: false, id: 6},
         {img: image4, title: 'Fish', describtion: 'Delicious fried fish', price: 'R 55.00',liked: false, id: 7},
       ]);
+
+      
+
+    //   useEffect(()=>{
+    //     const collectionRef = collection(firestore, 'food')
+    //     getDocs(collectionRef).then((snapshot)=>{
+    //         console.log(snapshot);
+    //     });
+    //     // console.log(items);
+    // },[])
 
       function like(id){
         let temp =  items.map(item=>{
@@ -115,12 +130,24 @@ export default function Home({navigation}) {
     },
 ]
    
+function toCart(){
+    navigation.navigate('Cart')
+  }
+
+  function logout(){
+    navigation.navigate('Login')
+}
+  
+
   return (
     <SafeAreaView style={styles.container}>
+        {isPopUp&&<Logout logout={logout} setIsPopUp={setIsPopUp} />}
         <View>
+        
             <View style={{...styles.cover,width: width}} />
-            <Header cartValue={cartValue} />
+            <Header setIsPopUp={setIsPopUp} toCart={toCart} cartValue={cartValue} />
         </View>
+        
         <ScrollView stickyHeaderIndices={[1]} onScroll={(e)=>handleScroll(e.nativeEvent.contentOffset)} nestedScrollEnabled showsVerticalScrollIndicator={false}>
             
 

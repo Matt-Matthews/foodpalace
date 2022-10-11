@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import styles from "../pages/styles";
 
 export default function Categories() {
-    const categories = ['All', 'Burgers', 'Fast food', 'Rice', 'Meat', 'Vegetables'];
+    const categories = ['All', 'Burgers', 'Fast food', 'Cakes', 'Meat', 'Vegetables'];
     const {height,width} = useWindowDimensions();
     const [selectedIndex, setSelectedIndex] = useState(0);
   return (

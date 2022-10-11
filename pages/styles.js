@@ -4,6 +4,7 @@ export default StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#fff',
+      position: 'relative'
     },
     header: {
         display: 'flex',
@@ -293,5 +294,27 @@ export default StyleSheet.create({
         borderBottomWidth: 2,
         borderBottomColor: 'gray',
         
+    },
+    popUp: {
+        position: 'absolute',
+        top: '5%',
+        left: 0,
+        backgroundColor: 'rgba(52, 52, 52, 0.3)',
+        zIndex: 1,
+        width: '100%',
+        marginTop: 40,
+    
+    },
+    popUpMenu: {
+        height: 35,
+        width: 100,
+        backgroundColor: '#fff',
+        opacity: 1,
+        position: 'absolute',
+        right: 5,
+        top: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
     }
   });
