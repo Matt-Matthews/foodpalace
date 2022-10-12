@@ -2,7 +2,7 @@ import { View, Text, ScrollView, Pressable, useWindowDimensions } from "react-na
 import React, {useState} from "react";
 import styles from "../pages/styles";
 
-export default function Categories() {
+export default function Categories({filter}) {
     const categories = ['All', 'Burgers', 'Fast food', 'Cakes', 'Meat', 'Vegetables'];
     const {height,width} = useWindowDimensions();
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -15,7 +15,7 @@ export default function Categories() {
             {
                 categories.map((item, index)=>{
                     return <Pressable 
-                                onPress={()=>setSelectedIndex(index)}
+                                onPress={()=>{setSelectedIndex(index);filter(item)}}
                                 style={[styles.catBtn,
                                     selectedIndex===index ?
                                         styles.catBtnSelected : styles.catBtnUnselected]} 

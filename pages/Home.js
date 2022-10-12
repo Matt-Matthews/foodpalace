@@ -1,7 +1,10 @@
-import { View, Text, ScrollView, useWindowDimensions, Image, Pressable} from "react-native";
+import { View, Text, ScrollView, useWindowDimensions, Image, Pressable, ActivityIndicator} from "react-native";
 import React, {useState, useEffect, useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FlatGrid } from 'react-native-super-grid';
+import {getDocs, collection, query, where, onSnapshot, } from 'firebase/firestore';
+import {firestore} from './firebaseConfig/firebase';
+import {onValue} from 'firebase/database'
 
 import styles from "./styles";
 import banner from '../assets/banner.jpg';
@@ -10,12 +13,9 @@ import banner3 from '../assets/banner3.jpg';
 import Banner from '../components/Banner';
 import Categories from "../components/Categories";
 import Header from "../components/Header";
-import image1 from '../assets/food/delicious-fried-chicken-plate.jpg';
-import image2 from '../assets/food/Pancake_Raspberry_Strawberry_White_background_526470_1280x853.jpg';
-import image3 from '../assets/food/wallpaperflare.com_wallpaper1.jpg';
-import image4 from '../assets/food/wallpaperflare.com_wallpaper.jpg';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Logout from "../components/Logout";
+import { auth } from "./firebaseConfig/firebase";
 
 export default function Home({navigation}) {
     const {height,width} = useWindowDimensions();
@@ -23,37 +23,73 @@ export default function Home({navigation}) {
     const [offset, setOffset] = useState(width * 0.9);
     const [scrollCounter,setScrollCounter] = useState(1);
     const [isDone,setIsDone] = useState(false);
-    const [cartValue,setCartValue] = useState(1);
     const [isPopUp, setIsPopUp] = useState(false);
+    const userId = auth.currentUser.uid;
 
     const scrollRef = useRef();
-    function moreInfo(){
-        navigation.navigate('About');
+    function moreInfo(item){
+        navigation.navigate('About',{
+            item: item
+        });
     }
-    
 
-    
 
-    const [items, setItems] = React.useState([
-        {img: image1, title: 'Fried chicken', describtion: 'Delicious fried chicken', price: 'R 50.00',liked: false, id: 0},
-        {img: image2, title: 'Pan cakes', describtion: 'Strawberry flavoured', price: 'R 30.00',liked: true, id: 1},
-        {img: image3, title: 'Nuggets', describtion: 'With french fries', price: 'R 65.00',liked: false, id: 2},
-        {img: image4, title: 'Fish', describtion: 'Delicious fried fish', price: 'R 55.00',liked: false, id: 3},
-        {img: image1, title: 'Fried chicken', describtion: 'Delicious fried chicken', price: 'R 50.00',liked: false, id: 4},
-        {img: image2, title: 'Pan cakes', describtion: 'Strawberry flavoured', price: 'R 30.00',liked: true, id: 5},
-        {img: image3, title: 'Nuggets', describtion: 'With french fries', price: 'R 65.00',liked: false, id: 6},
-        {img: image4, title: 'Fish', describtion: 'Delicious fried fish', price: 'R 55.00',liked: false, id: 7},
-      ]);
+    const [isLoading,setIsLoading] = useState(true);
+    const [cartValue,setCartValue] = useState(0);
 
-      
+    useEffect(async ()=>{
+        const collectionRef = collection(firestore, 'cart');
+  
+        try {
+          let dataQuery = query(collectionRef, where("userId", "==", userId));
+          
+          onSnapshot(dataQuery, (snapshot) => {
+            let data= snapshot.docs.map((doc)=>({...doc.data(), id: doc.id}));
+            
+            setCartValue(data.length);
+          })
+          
+          
+        //   console.log(data.length);
+          
+        }catch(e){
+            console.log(e.message);
+        
+        }
+        const interval = setTimeout(() => {
+            setIsLoading(false);
+         }, 10000)
+        return () => clearInterval(interval);
 
-    //   useEffect(()=>{
-    //     const collectionRef = collection(firestore, 'food')
-    //     getDocs(collectionRef).then((snapshot)=>{
-    //         console.log(snapshot);
-    //     });
-    //     // console.log(items);
-    // },[])
+       
+    },[])
+
+    const [items, setItems] = React.useState([]);
+    const [filteringData,setFilteringData] = React.useState([]);
+
+    async function getData() {
+        const collectionRef = collection(firestore, 'food');
+
+        try {
+          let data = await getDocs(collectionRef).then((snapshot)=>snapshot.docs.map(doc=>({...doc.data(),docId:doc.id})));
+            setItems(data);
+            setFilteringData(data);
+        }catch(e){
+            console.log(e.message);
+        }
+    }
+      useEffect(()=>{
+        getData();
+       
+    },[])
+
+    function filter(category) {
+        if(category==='All'){
+            setItems(filteringData);
+        }else{
+            setItems(filteringData.filter(item=>item.category===category));
+        }
+    }
 
       function like(id){
         let temp =  items.map(item=>{
@@ -149,7 +185,7 @@ function toCart(){
         </View>
         
         <ScrollView stickyHeaderIndices={[1]} onScroll={(e)=>handleScroll(e.nativeEvent.contentOffset)} nestedScrollEnabled showsVerticalScrollIndicator={false}>
-            
+        
 
             <View style={{...styles.carouselContainer,height: height * 0.22}}>
                  <ScrollView 
@@ -171,22 +207,27 @@ function toCart(){
             <View style={{width: width * 0.9, marginHorizontal: width * 0.05,backgroundColor:'#fff', position: 'relative'}}>
                 <View style={[{...styles.cover,width: width,},scrolled?styles.shadow: styles.noShadow]} />
                 <Text style={styles.catText}>Categories</Text>
-                <Categories />
+                <Categories filter={filter} />
             </View>
 
             <View style={styles.foodContainer}>
-                <FlatGrid
+                {filteringData.length===0&&isLoading?<ActivityIndicator size="large" color="#000000" />
+                :filteringData.length===0&&!isLoading?
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                        <Text style={{fontSize: 18,}}>Check internet connection</Text>
+                    </View>
+                :<FlatGrid
                     itemDimension={width * 0.3}
                     data={items}
                     style={styles.gridView}
                     spacing={width * 0.05}
                     renderItem={({ item }) => (
-                        <Pressable onPress={moreInfo} style={[styles.itemContainer,{height: height * 0.27}]}>
-                            <Image source={item.img} style={{width: '90%', height: '50%', marginTop: '10%'}} />
+                        <Pressable onPress={()=>moreInfo(item)} style={[styles.itemContainer,{height: height * 0.27}]}>
+                            <Image source={{uri: item.imgUrl}} style={{width: '90%', height: '50%', marginTop: '10%'}} />
                             <View style={styles.foodDetails}>
-                                <Text style={styles.itemName}>{item.title}</Text>
-                                <Text style={styles.itemCode}>{item.describtion}</Text>
-                                <Text style={styles.itemPrice}>{item.price}</Text>
+                                <Text style={styles.itemName}>{item.name}</Text>
+                                <Text style={styles.itemCode}>{item.title}</Text>
+                                <Text style={styles.itemPrice}>R {item.price.toFixed(2)}</Text>
                             </View>
                             <Pressable style={styles.heart} onPress={()=>like(item.id)}>
                             <Ionicons name={item.liked?"md-heart":"md-heart-outline"} size={20} color="black" />
@@ -194,7 +235,11 @@ function toCart(){
                             
                         </Pressable>
                     )}
-                />
+                />}{
+                    items.length===0&&filteringData.length!==0&&<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                        <Text style={{fontSize: 20, fontWeight: 'bold'}}>No items found</Text>
+                    </View>
+                }
             </View>
             
         </ScrollView>

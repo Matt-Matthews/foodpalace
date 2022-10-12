@@ -3,9 +3,13 @@ import React from "react";
 import styles from "../pages/styles";
 import logo from '../assets/logo3.png';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { auth } from "../pages/firebaseConfig/firebase";
 
 export default function SecHeader({cartValue,toCart,prevPage,setIsPopUp}) {
   
+  function logout(){
+    auth.signOut();
+  }
   return (
     <View style={styles.header}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -25,7 +29,7 @@ export default function SecHeader({cartValue,toCart,prevPage,setIsPopUp}) {
                 </View>
             }
             </View>
-            <Pressable onPress={()=>setIsPopUp(prev=>!prev)}><Ionicons name="md-ellipsis-vertical" size={32} color="black" /></Pressable>
+            <Pressable onPress={()=>{setIsPopUp(prev=>!prev);logout()}}><Ionicons name="md-ellipsis-vertical" size={32} color="black" /></Pressable>
             
         </View>
     </View>

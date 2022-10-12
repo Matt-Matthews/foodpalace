@@ -1,34 +1,88 @@
-import { View, Text, SafeAreaView, ScrollView, Image, useWindowDimensions, Pressable } from "react-native";
-import React, {useState} from "react";
+import { View, Text, SafeAreaView, ScrollView, Image, useWindowDimensions, Pressable, ActivityIndicator } from "react-native";
+import React, {useEffect, useState} from "react";
 import styles from "./styles";
 import SecHeader from "../components/SecHeader";
-import img from '../assets/food/delicious-fried-chicken-plate.jpg';
 import CustomeBtn from "../components/CustomeBtn";
 import { Ionicons } from "@expo/vector-icons";
 import Logout from "../components/Logout";
+import {collection, query,where, onSnapshot,addDoc, updateDoc,doc, getDocs} from 'firebase/firestore';
+import {auth, firestore} from './firebaseConfig/firebase';
+import { async } from "@firebase/util";
 
 
-export default function About({navigation}) {
+export default function About({navigation,route}) {
   const {height, width} = useWindowDimensions();
   const [isPopUp, setIsPopUp] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [initPrice,setInitPrice] = useState(50.00);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isLoading,setIsLoading] = useState(false);
+  const userId = auth.currentUser.uid;
+
+  const {item} = route.params;
+
+
+  const [initPrice,setInitPrice] = useState(item.price);
   const [totPrice,setTotPrice] = useState(initPrice);
+
 
   function handleQuantity(sign){
     if(sign==='-'){
       if(quantity != 1){
         setQuantity(prev=>prev - 1)
-        setTotPrice(prev => prev - 50)
+        setTotPrice(prev => prev - initPrice)
       }
     }else {
       setQuantity(prev=>prev + 1)
-      setTotPrice(prev => prev + 50)
+      setTotPrice(prev => prev + initPrice)
     }
   }
 
   function toCart(){
-    navigation.navigate('Cart')
+    
+        navigation.navigate('Cart');
+    
+  }
+  async function AddToCart(){
+    setIsLoading(true);
+    try{
+      const collectionRef = collection(firestore, 'cart');
+     
+      let dataQuery = query(collectionRef, where("id", "==", item.id));
+
+      let selectedItem = await getDocs(dataQuery).then((snapshot)=>snapshot.docs.map(doc=>({...doc.data(),docId:doc.id})));
+
+      console.log(selectedItem.length);
+
+      if(selectedItem.length > 0){
+          selectedItem.forEach(food=>{
+            if(food.userId === userId){
+              let docRef = doc(firestore,`cart/${food.docId}`);
+              updateDoc(docRef,{totPrice: totPrice}).then(()=>{
+              setIsLoading(false);
+              navigation.navigate('Cart');
+            })
+            }else {
+              addDoc(collectionRef, {...item,userId: userId,totPrice: totPrice}).then(()=>{
+                setIsLoading(false);
+                navigation.navigate('Cart');
+              })
+            }
+          }); 
+          
+      }else {
+        await addDoc(collectionRef, {...item,userId: userId,totPrice: totPrice}).then(()=>{
+          setIsLoading(false);
+          navigation.navigate('Cart');
+        })
+      }
+      
+      
+      
+    }catch(e){
+      console.log(e.message);
+      setIsLoading(false);
+    }
+    
   }
   function prevPage(){
     navigation.goBack();
@@ -36,38 +90,55 @@ export default function About({navigation}) {
   function logout(){
     navigation.navigate('Login')
 }
+
+const [cartValue,setCartValue] = useState(0);
+
+useEffect(()=>{
+  const collectionRef = collection(firestore, 'cart');
+  
+        try {
+          let dataQuery = query(collectionRef, where("userId", "==", userId));
+          
+          onSnapshot(dataQuery, (snapshot) => {
+            let data= snapshot.docs.map((doc)=>({...doc.data()}));
+            
+            setCartValue(data.length);
+          })
+          
+          
+        //   console.log(data.length);
+          
+        }catch(e){
+            console.log(e.message);
+        
+        }
+},[])
+
   return (
     <SafeAreaView style={styles.container}>
       {isPopUp&&<Logout logout={logout} setIsPopUp={setIsPopUp} />}
         <View style={{marginTop: '8%'}}>
         
-        <SecHeader setIsPopUp={setIsPopUp} toCart={toCart} prevPage={prevPage} />
+        <SecHeader setIsPopUp={setIsPopUp} cartValue={cartValue} toCart={toCart} prevPage={prevPage} />
         <ScrollView>
           <View style={styles.infoImgCont}>
-            <Image source={img} resizeMode="contain" style={{width: width* 0.75, height: height* 0.3}} />
+            <Image source={{uri: item.imgUrl}} resizeMode="contain" style={{width: width* 0.75, height: height* 0.3}} />
           </View>
           <View style={styles.infoContainer}>
             <View style={styles.infoHeader}>
-              <Text style={styles.catPara}>Fried chicken</Text>
-              <Ionicons name={"md-heart"} size={20} color="black" />
+              <Text style={styles.catPara}>{item.name}</Text>
+              <Pressable onPress={()=>setIsLiked(prev=>!prev)}>
+                <Ionicons name={isLiked?"md-heart":"md-heart-outline"} size={20} color="black" />
+              </Pressable>
               {/* "md-heart-outline" */}
             </View>
             <View style={{height: height *0.02}} />
-            <Text style={{fontSize: 16}}>Delicious fried chicken</Text>
+            <Text style={{fontSize: 16}}>{item.title}</Text>
             <View style={{height: height *0.01}} />
-            <Text>Lörem ipsum askbränd beligen tills fesk. 
-                  Arabisk vår nivådat pofösm. 
-                  Stjärnfamilj förlåtturné jodat grindstad. 
-                  Autonat alig fön, juholtare. 
-                  Antis vuxenmålarbok medan matnationalism. 
-                  Milingar mjuta, och ell. 
-                  Tren hamont därför att orade. 
-                  Avis vuvuzela #metoo. 
-                  Dyra vogt. Du kan vara drabbad. 
-                  Poddtaxi beslutsblindhet den ställa frågor. 
+            <Text>{item.description}
             </Text>
             <View style={{height: height *0.01}} />
-            <Text style={{fontSize: 16}}>R 50.00</Text>
+            <Text style={{fontSize: 16}}>R {item.price.toFixed(2)}</Text>
             <View style={{height: height *0.04}} />
             <View style={styles.quantity}>
               <Text style={{fontSize: 16}}>Quantity: </Text>
@@ -86,7 +157,8 @@ export default function About({navigation}) {
             <View style={{height: height *0.05}} />
           </View>
 
-          <CustomeBtn name='Add to cart' onPress={()=>alert('Item added')} />
+          <CustomeBtn name='Add to cart' onPress={AddToCart} />
+          {isLoading&&<ActivityIndicator size="large" color="#000000" />}
         </ScrollView>
         </View>
     </SafeAreaView>
