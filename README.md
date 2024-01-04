@@ -25,3 +25,4 @@ it a simple food ordering app. It is a serveless app.
 - The app was not tested on IOS phone
 - Easy to use
   
+![Diagram](https://github.com/Matt-Matthews/foodpalace/assets/65659429/740217cb-e95f-4ff3-950c-fdeaff144adc)
