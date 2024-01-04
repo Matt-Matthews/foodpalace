@@ -39,7 +39,7 @@ export default function Payment({navigation,route}) {
         })
       });
       }catch(e){
-        console.log(e.message);
+        alert(e.message);
       }
       
     }
@@ -58,11 +58,8 @@ useEffect(()=>{
             setCartValue(data.length);
           })
           
-          
-        //   console.log(data.length);
-          
         }catch(e){
-            console.log(e.message);
+            alert(e.message);
         
         }
 },[])

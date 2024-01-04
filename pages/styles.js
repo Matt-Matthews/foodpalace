@@ -1,10 +1,15 @@
-import { StyleSheet} from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+var subheading = Dimensions.get('screen').width * 0.04;
+var heading = Dimensions.get('screen').width * 0.045;
+var title = Dimensions.get('screen').width * 0.035;
+var text = Dimensions.get('screen').width * 0.03
 
 export default StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      position: 'relative'
+        flex: 1,
+        backgroundColor: '#fff',
+        position: 'relative',
     },
     header: {
         display: 'flex',
@@ -44,18 +49,18 @@ export default StyleSheet.create({
         fontSize: 10,
         color: '#fff',
     },
-    carouselContainer:{
+    carouselContainer: {
         width: '90%',
         height: '30%',
         marginHorizontal: '5%',
         marginTop: '7%',
         borderRadius: 25,
         position: 'relative',
-        
+
     },
     carouselScroller: {
         borderRadius: 25,
-        
+
     },
     bannerImg: {
         borderRadius: 25,
@@ -76,19 +81,19 @@ export default StyleSheet.create({
         top: '7%'
     },
     heading: {
-        fontSize: 20,
+        fontSize: heading,
         color: '#fff',
         fontWeight: '700',
     },
     para: {
-        fontSize: 18,
+        fontSize: subheading,
         color: '#fff',
         marginTop: '6%',
         width: '50%',
     },
     catText: {
         marginVertical: '7%',
-        fontSize: 20,
+        fontSize: heading,
         fontWeight: '700',
     },
     catBtn: {
@@ -103,25 +108,25 @@ export default StyleSheet.create({
     catBtnUnselected: {
         backgroundColor: '#fff',
     },
-    catPara:{
+    catPara: {
         color: '#000',
-        fontSize: 18,
-        fontWeight: '500'
+        fontSize: subheading,
+        fontWeight: '600'
     },
-    catParaSelected:{
+    catParaSelected: {
         color: '#fff'
     },
-    catParaUnselected:{
+    catParaUnselected: {
         color: '#000'
     },
     foodContainer: {
         marginTop: '2%',
-        
+
     },
     gridView: {
         flex: 1,
-      },
-      itemContainer: {
+    },
+    itemContainer: {
         borderRadius: 16,
         padding: '3%',
         marginTop: '1%',
@@ -131,50 +136,50 @@ export default StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 3,
         alignItems: 'center',
-        position:'relative',
-      },
-      itemName: {
-        fontSize: 18,
+        position: 'relative',
+    },
+    itemName: {
+        fontSize: Dimensions.get('screen').width * 0.04,
         color: '#000',
         fontWeight: '600',
-      },
-      itemCode: {
+    },
+    itemCode: {
         fontSize: 12,
         fontWeight: '400',
         color: '#000',
-      },itemPrice: {
+    }, itemPrice: {
         fontSize: 16,
         fontWeight: '400'
-      },
-      foodDetails: {
+    },
+    foodDetails: {
         width: '100%',
-        justifyContent:'flex-start',
+        justifyContent: 'flex-start',
         paddingLeft: '10%',
         marginTop: '5%'
-      },
-      heart: {
+    },
+    heart: {
         position: 'absolute',
         right: 10,
         top: 10,
-      },
-      cover: {
+    },
+    cover: {
         position: 'absolute',
         backgroundColor: '#fff',
         height: '110%',
         left: '-5.5%',
         borderBottomColor: 'gray',
 
-      }, 
-      shadow: {
+    },
+    shadow: {
         elevation: 6,
         shadowColor: '#171717',
         shadowOpacity: 0.2,
         shadowRadius: 3,
         zIndex: -1,
-      }, 
-      noShadow: {
-      },
-      textField: {
+    },
+    noShadow: {
+    },
+    textField: {
         width: '90%',
         height: 50,
         borderColor: '#000',
@@ -186,14 +191,15 @@ export default StyleSheet.create({
         paddingHorizontal: 15,
         alignItems: 'center',
         marginBottom: 15,
-      },
-      textInput: {
+    },
+    textInput: {
         width: '80%',
         marginLeft: 6,
-      },
-      imgContainer: {
-        width: '100%', 
-        alignItems: 'center', 
+    },
+    imgContainer: {
+        width: '100%',
+        height: '40%',
+        alignItems: 'center',
         justifyContent: 'center',
     },
     customeBtn: {
@@ -218,16 +224,16 @@ export default StyleSheet.create({
     },
     secBtnBtnText: {
         color: '#000',
-        fontSize: 18,
+        fontSize: subheading,
         fontWeight: "bold",
     },
     infoImgCont: {
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-    }, 
+    },
     infoContainer: {
-        width: '90%', 
+        width: '90%',
         marginHorizontal: '5%',
     },
     infoHeader: {
@@ -272,28 +278,34 @@ export default StyleSheet.create({
         marginVertical: '2%',
         position: 'relative',
         elevation: 6,
-    }, 
+    },
     icon: {
         position: 'absolute',
         right: 10,
+        top: 10,
+    },
+    iconClose: {
+        position: 'absolute',
+        left: 10,
         top: 10,
     },
     cardImg: {
         width: '40%',
     },
     btnPos: {
-        position: 'absolute',
-        width:'100%',
-        bottom: 10,
-        left: '3%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        
+        // position: 'absolute',
+        // width:'100%',
+        // bottom: 10,
+        // left: '3%',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        marginLeft: Dimensions.get('screen').width * 0.05
+
     },
     border: {
         borderBottomWidth: 2,
         borderBottomColor: 'gray',
-        
+
     },
     popUp: {
         position: 'absolute',
@@ -303,7 +315,7 @@ export default StyleSheet.create({
         zIndex: 1,
         width: '100%',
         marginTop: 40,
-    
+
     },
     popUpMenu: {
         height: 35,
@@ -317,4 +329,4 @@ export default StyleSheet.create({
         alignItems: 'center',
         borderRadius: 10,
     }
-  });
+});
